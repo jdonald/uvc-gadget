@@ -597,12 +597,12 @@ uvc_events_process(struct uvc_device *dev)
 	case UVC_EVENT_STREAMON:
 		uvc_video_reqbufs(dev, 4);
 		uvc_video_stream(dev, 1);
-		break;
+		return;
 
 	case UVC_EVENT_STREAMOFF:
 		uvc_video_stream(dev, 0);
 		uvc_video_reqbufs(dev, 0);
-		break;
+		return;
 	}
 
 	ioctl(dev->fd, UVCIOC_SEND_RESPONSE, &resp);
