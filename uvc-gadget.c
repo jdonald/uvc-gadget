@@ -451,11 +451,8 @@ v4l2_process_data(struct v4l2_device *dev)
 	}
 
 	ret = ioctl(dev->v4l2_fd, VIDIOC_DQBUF, &vbuf);
-	if (ret < 0) {
-		printf("V4L2: Unable to dequeue buffer: %s (%d).\n",
-			strerror(errno), errno);
+	if (ret < 0)
 		return ret;
-	}
 
 	dev->dqbuf_count++;
 
@@ -953,11 +950,8 @@ uvc_video_process(struct uvc_device *dev)
 	if (dev->run_standalone) {
 		/* UVC stanalone setup. */
 		ret = ioctl(dev->uvc_fd, VIDIOC_DQBUF, &ubuf);
-		if (ret < 0) {
-			printf("UVC: Unable to dequeue buffer: %s (%d).\n",
-					strerror(errno), errno);
+		if (ret < 0)
 			return ret;
-		}
 
 		dev->dqbuf_count++;
 
@@ -999,11 +993,8 @@ uvc_video_process(struct uvc_device *dev)
 
 		/* Dequeue the spent buffer from UVC domain */
 		ret = ioctl(dev->uvc_fd, VIDIOC_DQBUF, &ubuf);
-		if (ret < 0) {
-			printf("UVC: Unable to dequeue buffer: %s (%d).\n",
-					strerror(errno), errno);
+		if (ret < 0)
 			return ret;
-		}
 
 		if (dev->io == IO_METHOD_USERPTR)
 			for (i = 0; i < dev->nbufs; ++i)
