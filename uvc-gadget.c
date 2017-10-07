@@ -432,7 +432,7 @@ v4l2_process_data(struct v4l2_device *dev)
 		return 0;
 
 	if (dev->udev->first_buffer_queued)
-		if ((dev->dqbuf_count + 1) >= dev->qbuf_count)
+		if (dev->dqbuf_count >= dev->qbuf_count)
 			return 0;
 
 	/* Dequeue spent buffer rom V4L2 domain. */
@@ -1351,11 +1351,11 @@ uvc_handle_streamon_event(struct uvc_device *dev)
 			ret = v4l2_reqbufs(dev->vdev, dev->vdev->nbufs);
 			if (ret < 0)
 				goto err;
-
-			ret = v4l2_qbuf(dev->vdev);
-			if (ret < 0)
-				goto err;
 		}
+		ret = v4l2_qbuf(dev->vdev);
+		if (ret < 0)
+			goto err;
+		
 
 		/* Start V4L2 capturing now. */
 		ret = v4l2_start_capturing(dev->vdev);
@@ -2011,8 +2011,6 @@ uvc_events_process(struct uvc_device *dev)
 		if (!dev->run_standalone && dev->vdev->is_streaming) {
 			/* UVC - V4L2 integrated path. */
 			v4l2_stop_capturing(dev->vdev);
-			v4l2_uninit_device(dev->vdev);
-			v4l2_reqbufs(dev->vdev, 0);
 			dev->vdev->is_streaming = 0;
 		}
 
@@ -2022,6 +2020,7 @@ uvc_events_process(struct uvc_device *dev)
 			uvc_uninit_device(dev);
 			uvc_video_reqbufs(dev, 0);
 			dev->is_streaming = 0;
+			dev->first_buffer_queued = 0;
 		}
 
 		return;
@@ -2365,7 +2364,6 @@ main(int argc, char *argv[])
 		 * buffers queued.
 		 */
 		v4l2_reqbufs(vdev, vdev->nbufs);
-		v4l2_qbuf(vdev);
 	}
 
 	if (mjpeg_image)
