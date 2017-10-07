@@ -1949,44 +1949,6 @@ uvc_events_process_data(struct uvc_device *dev, struct uvc_request_data *data)
 		dev->width = frame->width;
 		dev->height = frame->height;
 
-		/*
-		 * Try to set the default format at the V4L2 video capture
-		 * device as requested by the user.
-		 */
-		CLEAR(fmt);
-
-		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		fmt.fmt.pix.field = V4L2_FIELD_ANY;
-		fmt.fmt.pix.width = frame->width;
-		fmt.fmt.pix.height = frame->height;
-		fmt.fmt.pix.pixelformat = format->fcc;
-
-		switch (format->fcc) {
-		case V4L2_PIX_FMT_YUYV:
-			fmt.fmt.pix.sizeimage =
-				(fmt.fmt.pix.width * fmt.fmt.pix.height * 2);
-			break;
-		case V4L2_PIX_FMT_MJPEG:
-			fmt.fmt.pix.sizeimage = dev->imgsize;
-			break;
-		}
-
-		/*
-		 * As per the new commit command received from the UVC host
-		 * change the current format selection at both UVC and V4L2
-		 * sides.
-		 */
-		ret = uvc_video_set_format(dev);
-		if (ret < 0)
-			goto err;
-
-		if (!dev->run_standalone) {
-			/* UVC - V4L2 integrated path. */
-			ret = v4l2_set_format(dev->vdev, &fmt);
-			if (ret < 0)
-				goto err;
-		}
-
 		if (dev->bulk) {
 			ret = uvc_handle_streamon_event(dev);
 			if (ret < 0)
