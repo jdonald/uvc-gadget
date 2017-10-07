@@ -880,6 +880,7 @@ uvc_open(struct uvc_device **uvc, char *devname)
 	return 0;
 
 err:
+	close(fd);
 	return ret;
 }
 
