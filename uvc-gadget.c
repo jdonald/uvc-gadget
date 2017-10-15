@@ -1254,6 +1254,7 @@ uvc_video_reqbufs_userptr(struct uvc_device *dev, int nbufs)
 			ret = -ENOMEM;
 			goto err;
 		}
+		dev->mem = dev->dummy_buf;
 
 		switch (dev->fcc) {
 		case V4L2_PIX_FMT_YUYV:
