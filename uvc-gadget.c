@@ -1329,6 +1329,10 @@ uvc_handle_streamon_event(struct uvc_device *dev)
 {
 	int ret;
 
+	ret = uvc_video_set_format(dev);
+	if (ret < 0)
+		goto err;
+
 	ret = uvc_video_reqbufs(dev, dev->nbufs);
 	if (ret < 0)
 		goto err;
