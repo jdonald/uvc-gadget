@@ -1329,10 +1329,6 @@ uvc_handle_streamon_event(struct uvc_device *dev)
 {
 	int ret;
 
-	ret = uvc_video_set_format(dev);
-	if (ret < 0)
-		goto err;
-
 	ret = uvc_video_reqbufs(dev, dev->nbufs);
 	if (ret < 0)
 		goto err;
@@ -1944,6 +1940,10 @@ uvc_events_process_data(struct uvc_device *dev, struct uvc_request_data *data)
 		dev->fcc = format->fcc;
 		dev->width = frame->width;
 		dev->height = frame->height;
+
+		ret = uvc_video_set_format(dev);
+		if (ret < 0)
+			goto err;
 
 		if (dev->bulk) {
 			ret = uvc_handle_streamon_event(dev);
